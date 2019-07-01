@@ -26,7 +26,7 @@ public class Logback {
                 throw new IllegalArgumentException("Enable value : " + fields, e);
             }
         } else {
-            log.info("SLF4J not config with logback");
+            log.info("SLF4J not config with demo");
             return;
         }
     }

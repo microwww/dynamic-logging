@@ -62,12 +62,12 @@ public class ServletMapping extends HttpServlet {
             } catch (ClassNotFoundException ex) {// ignore
             }
             try {
-                //logback
+                //demo
                 Class<?> clazz = Class.forName("ch.qos.logback.classic.LoggerContext");
                 Logback.changeLevel(logger, level);
-                success.add("logback");
+                success.add("demo");
             } catch (IllegalArgumentException e) {
-                fails.add("logback , " + e.getMessage());
+                fails.add("demo , " + e.getMessage());
             } catch (ClassNotFoundException ex) {// ignore
             }
         }
