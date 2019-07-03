@@ -1,5 +1,6 @@
 package com.github.microwww.dylog.servlet;
 
+import com.github.microwww.dylog.ChangeLoggingLevel;
 import com.github.microwww.dylog.Log4jone;
 import com.github.microwww.dylog.Log4jtwo;
 import com.github.microwww.dylog.Logback;
@@ -15,7 +16,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.logging.Logger;
 
-@WebServlet(urlPatterns = "/change-log-level")
 public class ServletMapping extends HttpServlet {
 
     private static Logger logger = Logger.getLogger(ServletMapping.class.getName());
@@ -43,32 +43,15 @@ public class ServletMapping extends HttpServlet {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             resp.getWriter().write("Request error ! GET/POST logger=...&level=...");
         } else {
-            try {
-                // log4j 1.x.x
-                Class<?> clazz = Class.forName("org.apache.log4j.Level");
-                Log4jone.changeLevel(logger, level);
-                success.add("log4j 1.x.x");
-            } catch (IllegalArgumentException e) {
-                fails.add("log4j 1.x.x ," + e.getMessage());
-            } catch (ClassNotFoundException e) {// ignore
-            }
-            try {
-                //log4j 2.x.x
-                Class<?> clazz = Class.forName("org.apache.logging.log4j.core.config.Configurator");
-                Log4jtwo.changeLevel(logger, level);
-                success.add("log4j 2.x.x");
-            } catch (IllegalArgumentException e) {
-                fails.add("log4j 2.x.x ," + e.getMessage());
-            } catch (ClassNotFoundException ex) {// ignore
-            }
-            try {
-                //demo
-                Class<?> clazz = Class.forName("ch.qos.logback.classic.LoggerContext");
-                Logback.changeLevel(logger, level);
-                success.add("demo");
-            } catch (IllegalArgumentException e) {
-                fails.add("demo , " + e.getMessage());
-            } catch (ClassNotFoundException ex) {// ignore
+            ChangeLoggingLevel[] list = {new Log4jone(), new Log4jtwo(), new Logback()};
+            for (ChangeLoggingLevel it : list) {
+                try {
+                    it.changeLevel(logger, level);
+                    success.add("change logger " + it.getName());
+                } catch (IllegalArgumentException e) {
+                    fails.add("Arguments error : " + it.getName());
+                } catch (UnsupportedOperationException e) { // ignore
+                }
             }
         }
         if (success.isEmpty()) {
