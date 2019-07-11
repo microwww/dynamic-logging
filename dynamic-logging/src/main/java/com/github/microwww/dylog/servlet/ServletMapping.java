@@ -47,15 +47,14 @@ public class ServletMapping extends HttpServlet {
                     success.add("change logger " + it.getName());
                 } catch (IllegalArgumentException e) {
                     fails.add("Arguments error : " + clazz.getName());
-                } catch (Exception e) {
-                    Utils.tryMultiCatches(e, IllegalAccessException.class, InstantiationException.class);
-                    ServletMapping.logger.log(Level.FINEST, "Init logger error", e.getMessage());
+                } catch (Throwable e) {
+                    Utils.tryMultiCatches(e, UnsupportedOperationException.class, IllegalAccessException.class, NoClassDefFoundError.class, ClassNotFoundException.class, InstantiationException.class);
                 }
             }
         }
         if (success.isEmpty()) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            resp.getWriter().write("Setting FAIL , not match log-sys, check dependence, log4j OR log4j2 !");
+            resp.getWriter().write("Setting FAIL , not match LOG-SYS, check dependence !");
             if (!fails.isEmpty()) {
                 resp.getWriter().write(" ERROR: " + fails.toString());
             }

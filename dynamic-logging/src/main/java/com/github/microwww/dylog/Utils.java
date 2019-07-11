@@ -26,7 +26,7 @@ public class Utils {
         return list;
     }
 
-    public static void tryMultiCatches(Exception e, Class<?>... catchs) {
+    public static void tryMultiCatches(Throwable e, Class<?>... catchs) {
         for (Class ex : catchs) {
             if (ex.isInstance(e)) {
                 return;
