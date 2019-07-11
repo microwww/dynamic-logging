@@ -33,7 +33,7 @@
 
     <groupId>com.github.microwww</groupId>
     <artifactId>dynamic-logging</artifactId>
-    <version>0.1.2-SNAPSHOT</version>
+    <version>0.1.2-release</version>
 
     <packaging>jar</packaging>
 
