@@ -1,19 +1,15 @@
 package com.github.microwww.dylog.servlet;
 
-import com.github.microwww.dylog.ChangeLoggingLevel;
-import com.github.microwww.dylog.Log4jone;
-import com.github.microwww.dylog.Log4jtwo;
-import com.github.microwww.dylog.Logback;
+import com.github.microwww.dylog.*;
 
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ServletMapping extends HttpServlet {
@@ -36,21 +32,24 @@ public class ServletMapping extends HttpServlet {
         String logger = req.getParameter("logger");
         String level = req.getParameter("level");
 
-        List<String> success = new ArrayList<>();
-        List<String> fails = new ArrayList<>();
+        List<String> success = new ArrayList<String>();
+        List<String> fails = new ArrayList<String>();
         resp.setContentType("text/plain; charset=ISO-8859-1");
-        if (Objects.isNull(logger) || Objects.isNull(level)) {
+        if (null == logger || null == level) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             resp.getWriter().write("Request error ! GET/POST logger=...&level=...");
         } else {
-            ChangeLoggingLevel[] list = {new Log4jone(), new Log4jtwo(), new Logback()};
-            for (ChangeLoggingLevel it : list) {
+            Class<?>[] list = {Log4jone.class, Log4jtwo.class, Logback.class};
+            for (Class<?> clazz : list) {
                 try {
+                    ChangeLoggingLevel it = (ChangeLoggingLevel) clazz.newInstance();
                     it.changeLevel(logger, level);
                     success.add("change logger " + it.getName());
                 } catch (IllegalArgumentException e) {
-                    fails.add("Arguments error : " + it.getName());
-                } catch (UnsupportedOperationException e) { // ignore
+                    fails.add("Arguments error : " + clazz.getName());
+                } catch (Exception e) {
+                    Utils.tryMultiCatches(e, IllegalAccessException.class, InstantiationException.class);
+                    ServletMapping.logger.log(Level.FINEST, "Init logger error", e.getMessage());
                 }
             }
         }

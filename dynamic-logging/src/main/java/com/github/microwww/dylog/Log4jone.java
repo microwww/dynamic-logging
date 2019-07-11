@@ -23,7 +23,8 @@ public class Log4jone implements ChangeLoggingLevel { // log4j 1.x.x
                     log.warn(String.format("Change logger level : [%s] => %s", logger, level));
                     Logger.getLogger(logger).setLevel((Level) lv.get(null));
                 }
-            } catch (NoSuchFieldException | IllegalAccessException | IllegalArgumentException e) {
+            } catch (Exception e) {
+                Utils.tryMultiCatches(e, NoSuchFieldException.class, IllegalAccessException.class, IllegalArgumentException.class);
                 String fields = Utils.joinFields(Level.class, Level.class);
                 throw new IllegalArgumentException("Enable value : " + fields, e);
             }

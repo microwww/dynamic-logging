@@ -28,7 +28,8 @@ public class Logback implements ChangeLoggingLevel {
                         log.warn(String.format("Change logger level : [%s] => %s", logger, level));
                         context.getLogger(logger).setLevel((Level) lv.get(null));
                     }
-                } catch (NoSuchFieldException | IllegalAccessException e) {
+                } catch (Exception e) {
+                    Utils.tryMultiCatches(e, NoSuchFieldException.class, IllegalAccessException.class);
                     String fields = Utils.joinFields(Level.class, Level.class);
                     throw new IllegalArgumentException("Enable value : " + fields, e);
                 }

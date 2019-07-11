@@ -24,7 +24,8 @@ public class Log4jtwo implements ChangeLoggingLevel {// log4j 2.x.x
                     log.warn(String.format("Change logger level : [%s] => %s", logger, level));
                     Configurator.setLevel(logger, (Level) lv.get(null));
                 }
-            } catch (NoSuchFieldException | IllegalAccessException e) {
+            } catch (Exception e) {
+                Utils.tryMultiCatches(e, NoSuchFieldException.class, IllegalAccessException.class);
                 String fields = Utils.joinFields(Level.class, Level.class);
                 throw new IllegalArgumentException("Enable value : " + fields, e);
             }
